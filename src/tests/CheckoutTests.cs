@@ -39,5 +39,16 @@ namespace Checkout.Tests
             _checkout.Scan(sku, quantity);
             Assert.Equal(expected, _checkout.GetTotal());
         }
+
+        [Fact]
+        public void AddCombinationOfProductsAndReturnTotal()
+        {
+            _checkout.Scan("A99", 2);
+            _checkout.Scan("C40", 1);
+            _checkout.Scan("C40", 3);
+            _checkout.Scan("B15", 1);
+            _checkout.Scan("C40", 1);
+            Assert.Equal(4.3M, _checkout.GetTotal());
+        }
     }
 }
