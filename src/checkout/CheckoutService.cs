@@ -31,15 +31,39 @@ namespace Checkout
 
         public decimal GetTotal()
         {
-            var group = _basket.Items
+            var groups = _basket.Items
                 .GroupBy(i => i.Product)
                 .Select(grp => new
                 {
                     Product = grp.Key,
                     Quantity = grp.Sum(g => g.Quantity)
                 });
-            var total = group.Sum(t => t.Product.UnitPrice * t.Quantity);
+
+            decimal total = 0;
+            foreach (var group in groups)
+            {
+                total += ProductTotal(group.Product, group.Quantity);
+            }
+
             return total;
+        }
+
+        private decimal ProductTotal(Product product, int quantity)
+        {
+            var discount = _discounts
+                .Where(d => d.Sku == product.Sku);
+
+            if (!discount.Any())
+            {
+                return product.UnitPrice * quantity;
+            }
+
+            var discountRule = discount.First();
+            var remainder = quantity % discountRule.Quantity;
+            var discountTotal = (quantity - remainder) / discountRule.Quantity * discountRule.OfferPrice;
+            var remainderTotal = remainder * product.UnitPrice;
+
+            return discountTotal + remainderTotal;
         }
     }
 }
