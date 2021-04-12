@@ -1,6 +1,4 @@
-﻿using Checkout.Contracts;
-
-namespace Checkout.Models
+﻿namespace Checkout.Models
 {
     public class Product
     {

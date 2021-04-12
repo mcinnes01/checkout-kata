@@ -8,11 +8,13 @@ namespace Checkout
     public class CheckoutService : ICheckout
     {
         private readonly IEnumerable<Product> _products;
+        private readonly IEnumerable<IDiscount> _discounts;
         private readonly IBasket _basket;
 
-        public CheckoutService(IEnumerable<Product> products)
+        public CheckoutService(IEnumerable<Product> products, IEnumerable<IDiscount> discounts)
         {
             _products = products;
+            _discounts = discounts;
             _basket = new Basket();
         }
 
