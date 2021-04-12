@@ -1,6 +1,5 @@
 ﻿using Checkout.Contracts;
 using Checkout.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,12 +18,26 @@ namespace Checkout
 
         public void Scan(string sku, int quantity)
         {
-            throw new NotImplementedException();
+            // Check the product exists
+            var product = _products
+                .Where(s => s.Sku == sku)
+                .First();
+
+            // Add it to the basket
+            _basket.Add(product, quantity);
         }
 
         public decimal GetTotal()
         {
-            throw new NotImplementedException();
+            var group = _basket.Items
+                .GroupBy(i => i.Product)
+                .Select(grp => new
+                {
+                    Product = grp.Key,
+                    Quantity = grp.Sum(g => g.Quantity)
+                });
+            var total = group.Sum(t => t.Product.UnitPrice * t.Quantity);
+            return total;
         }
     }
 }
