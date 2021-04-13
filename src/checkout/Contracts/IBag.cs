@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace Checkout.Contracts
 {
-    public interface IBasket
+    public interface IBag
     {
-        public IList<BasketItem> Items { get; }
+        public IList<BaggedItem> BaggedItems { get; }
         void Add(Product product, int quantity);
     }
 }

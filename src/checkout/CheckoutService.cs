@@ -9,13 +9,13 @@ namespace Checkout
     {
         private readonly IEnumerable<Product> _products;
         private readonly IEnumerable<IDiscount> _discounts;
-        private readonly IBasket _basket;
+        private readonly IBag _bag;
 
         public CheckoutService(IEnumerable<Product> products, IEnumerable<IDiscount> discounts)
         {
             _products = products;
             _discounts = discounts;
-            _basket = new Basket();
+            _bag = new Bag();
         }
 
         public void Scan(string sku, int quantity)
@@ -25,13 +25,13 @@ namespace Checkout
                 .Where(s => s.Sku == sku)
                 .First();
 
-            // Add it to the basket
-            _basket.Add(product, quantity);
+            // Add it to the bag
+            _bag.Add(product, quantity);
         }
 
         public decimal GetTotal()
         {
-            var groups = _basket.Items
+            var groups = _bag.BaggedItems
                 .GroupBy(i => i.Product)
                 .Select(grp => new
                 {

@@ -3,16 +3,16 @@ using System.Collections.Generic;
 
 namespace Checkout.Models
 {
-    public class Basket : IBasket
+    public class Bag : IBag
     {
-        public IList<BasketItem> Items { get; } = new List<BasketItem>();
+        public IList<BaggedItem> BaggedItems { get; } = new List<BaggedItem>();
         public void Add(Product product, int quantity)
         {
-            Items.Add(new BasketItem { Product = product, Quantity = quantity });
+            BaggedItems.Add(new BaggedItem { Product = product, Quantity = quantity });
         }
     }
 
-    public class BasketItem
+    public class BaggedItem
     {
         public Product Product { get; set; }
         public int Quantity { get; set; }
