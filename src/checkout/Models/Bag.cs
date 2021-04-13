@@ -6,6 +6,7 @@ namespace Checkout.Models
     public class Bag : IBag
     {
         public IList<BaggedItem> BaggedItems { get; } = new List<BaggedItem>();
+
         public void Add(Product product, int quantity)
         {
             BaggedItems.Add(new BaggedItem { Product = product, Quantity = quantity });

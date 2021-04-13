@@ -1,4 +1,5 @@
 ﻿using Checkout.Contracts;
+using Checkout.Decorators;
 using Checkout.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,8 @@ namespace Checkout
         private readonly IEnumerable<IDiscount> _discounts;
         private readonly IBag _bag;
 
-        public CheckoutService(IEnumerable<Product> products, IEnumerable<IDiscount> discounts)
+        public CheckoutService(IEnumerable<Product> products,
+            IEnumerable<IDiscount> discounts)
         {
             _products = products;
             _discounts = discounts;
@@ -31,39 +33,28 @@ namespace Checkout
 
         public decimal GetTotal()
         {
-            var groups = _bag.BaggedItems
+            // These are the items scanned in to the till
+            var receiptItems = _bag.BaggedItems
                 .GroupBy(i => i.Product)
-                .Select(grp => new
+                .Select(grp => new ReceiptItem
                 {
                     Product = grp.Key,
                     Quantity = grp.Sum(g => g.Quantity)
                 });
 
-            decimal total = 0;
-            foreach (var group in groups)
+            decimal subtotal = 0;
+            // Loop over the receipt items and apply the discounts
+            foreach (var item in receiptItems)
             {
-                total += ProductTotal(group.Product, group.Quantity);
+                // Apply the single item pricing first to get our base price without discounts
+                IReceiptItem singleItem = new SingleItemPricing(_discounts, item);
+                // Run the item through any subsequent discounts
+                IReceiptItem quantityDiscount = new QuantityDiscount(_discounts, singleItem);
+                // Add the item price to the subtotal
+                subtotal += quantityDiscount.GetTotal();
             }
 
-            return total;
-        }
-
-        private decimal ProductTotal(Product product, int quantity)
-        {
-            var discount = _discounts
-                .Where(d => d.Sku == product.Sku);
-
-            if (!discount.Any())
-            {
-                return product.UnitPrice * quantity;
-            }
-
-            var discountRule = discount.First();
-            var remainder = quantity % discountRule.Quantity;
-            var discountTotal = (quantity - remainder) / discountRule.Quantity * discountRule.OfferPrice;
-            var remainderTotal = remainder * product.UnitPrice;
-
-            return discountTotal + remainderTotal;
+            return subtotal;
         }
     }
 }
