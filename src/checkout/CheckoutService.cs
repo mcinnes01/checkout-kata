@@ -36,11 +36,7 @@ namespace Checkout
             // These are the items scanned in to the till
             var receiptItems = _bag.BaggedItems
                 .GroupBy(i => i.Product)
-                .Select(grp => new ReceiptItem
-                {
-                    Product = grp.Key,
-                    Quantity = grp.Sum(g => g.Quantity)
-                });
+                .Select(grp => new ReceiptItem(grp.Key, grp.Sum(g => g.Quantity)));
 
             decimal subtotal = 0;
             // Loop over the receipt items and apply the discounts

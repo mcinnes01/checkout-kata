@@ -4,16 +4,22 @@ namespace Checkout.Models
 {
     public class ReceiptItem : IReceiptItem
     {
-        public Product Product { get; set; }
-        public int Quantity { get; set; }
+        private Product _product { get; }
+        private int _quantity { get; }
 
-        public Product GetProduct() => Product;
+        public ReceiptItem(Product product, int quantity)
+        {
+            _product = product;
+            _quantity = quantity;
+        }
 
-        public int GetQuantity() => Quantity;
+        public Product GetProduct() => _product;
+
+        public int GetQuantity() => _quantity;
 
         public decimal GetTotal()
         {
-            return Product.UnitPrice * Quantity;
+            return _product.UnitPrice * _quantity;
         }
     }
 }
