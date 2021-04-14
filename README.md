@@ -42,3 +42,15 @@ Your solution will be measured against the deliverables above, and how you manag
 * Maintainable code
 * Abstraction at sensible points
 * How you would refactor your solution to deliver future requirements
+
+I have decided to use a decorator pattern, the reason for this is that each product can then be treated by multiple pricing methods, and will only be affected by each decorator they pass through, if they meet the requirements of that decorator. This means a product could be part of a multi-buy for example, but also receive a percentage discount i.e. for membership card holders.
+
+This is a fairly expandable solution, however it doesn't cover scenarios such as mix and match like a meal-deal or total basket discounts. To achieve this you could have decorators for different levels, so I have chosen a product level decorator, but you could make a "Bag" level decorator to apply discounts across products or to the receipt as a whole.
+
+I'm not using any DI for this basic example, but you could register the decorators chaining in your DI container, meaning you would only need to inject an IReciptItem in to your checkout, essentially allowing you to decouple the specific discount implementations from the checkout service.
+
+This however still comes with a drawback that you cannot change the order in which the decorators are applied. To further increase flexibility you could implement something that allows you to configure the order in which to run the items through the decorators. This would probably make sense to have some form of data store, as you may want to run different configurations for different people. For example geographic location, special offers between dates, user demographics (pensioner discounts, family cards), etc.
+
+To do this a factory patterns could be used to return the IReceiptItem decorators chain specifically for the customer.
+
+Other considerations are strategy pattern, which could identify if there are any discounts applicapable to a product and apply the discount. Again coupling with a factory would help resolve the discounts applicable without having to loop over each discount.
