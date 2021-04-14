@@ -65,5 +65,14 @@ namespace Checkout.Tests
             _checkout.Scan("A99", 3);
             Assert.Equal(6.5M, _checkout.GetTotal());
         }
+
+        [Fact]
+        public void BiscuitsAppleBiscuitsAppliesBiscuitDiscount()
+        {
+            _checkout.Scan("B15", 1);
+            _checkout.Scan("A99", 1);
+            _checkout.Scan("B15", 1);
+            Assert.Equal(0.95M, _checkout.GetTotal());
+        }
     }
 }
