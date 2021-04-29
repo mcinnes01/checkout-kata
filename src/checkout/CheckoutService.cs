@@ -11,13 +11,15 @@ namespace Checkout
         private readonly IEnumerable<Product> _products;
         private readonly IEnumerable<IDiscount> _discounts;
         private readonly IBag _bag;
+        private readonly IBagPolicyFactory _bagPolicyFactory;
 
         public CheckoutService(IEnumerable<Product> products,
-            IEnumerable<IDiscount> discounts)
+            IEnumerable<IDiscount> discounts, IBagPolicyFactory bagPolicyFactory)
         {
             _products = products;
             _discounts = discounts;
             _bag = new Bag();
+            _bagPolicyFactory = bagPolicyFactory;
         }
 
         public void Scan(string sku, int quantity)
@@ -49,6 +51,11 @@ namespace Checkout
                 // Add the item price to the subtotal
                 subtotal += quantityDiscount.GetTotal();
             }
+
+            // Add Bagging fee
+            subtotal += _bagPolicyFactory
+                .GetBagPolicy()
+                .GetBagCost(_bag.Count);
 
             return subtotal;
         }
